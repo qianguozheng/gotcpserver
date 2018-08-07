@@ -3,6 +3,13 @@ package proto
 import "github.com/qianguozheng/goadmin/model"
 
 type RclConfig struct {
+	Cmd   string        `json:"cmd"`
+	SeqId string        `json:"seqId"`
+	Code  string        `json:"code"`
+	Data  RclConfigCore `json:"data"`
+}
+
+type RclConfigCore struct {
 	Md5            string         `json:"md5"`
 	Mode           int            `json:"mode"`
 	Name           string         `json:"name"`

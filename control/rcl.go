@@ -20,7 +20,11 @@ func RetriveDeviceInfoFormRCL(mac string) string {
 	wanqos := model.GetWanQosByQosId(qos.Id)
 	md5 := model.GetMd5ByDeviceId(dev.Id)
 
-	rcl := proto.RclConfig{
+	if 0 == dev.Sync {
+		md5.Md5 = "00000000000000000000000000000000"
+	}
+
+	rclCore := proto.RclConfigCore{
 		Md5:  md5.Md5,
 		Mode: dev.Mode,
 		Name: dev.Name,
@@ -74,6 +78,16 @@ func RetriveDeviceInfoFormRCL(mac string) string {
 			},
 		},
 	}
+
+	rcl := proto.RclConfig{
+		Cmd:   "rcl",
+		SeqId: "uniqueid",
+		Code:  "000",
+		Data:  rclCore,
+	}
+	//TODO: checkValid
+	//Type - GW500/AR9344 have different requirement
+	//Mode - AP/Route have different requirement
 
 	fmt.Println(rcl)
 

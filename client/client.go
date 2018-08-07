@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"time"
-
-	"encoding/json"
 
 	"../proto"
 )
@@ -50,6 +50,7 @@ func HeartBeat() ([]byte, uint32) {
 	return msg, proto.CmdKV["heartbeat"]
 }
 
+//send Rcl request to server
 func Rcl() ([]byte, uint32) {
 	rcc := proto.ReqParam{
 		Cmd:   "rcl",
@@ -63,6 +64,15 @@ func Rcl() ([]byte, uint32) {
 	return msg, proto.CmdKV["rcl"]
 }
 
+//send ConfigRead response to server
+func ConfigRead() ([]byte, uint32) {
+	msg, err := ioutil.ReadFile("configread.json")
+	if err != nil {
+		fmt.Println("config read failed", err.Error())
+	}
+	return msg, proto.CmdKV["config_read_resp"]
+}
+
 func SendData(conn net.Conn, msg []byte, Id uint32) {
 	conn.Write(proto.PacketLemon3((msg), Id))
 }
@@ -72,7 +82,9 @@ func ProtoCycle(conn net.Conn) {
 	//msg, id := HeartBeat()
 
 	//msg, id := LoginFunc()
-	msg, id := Rcl()
+	//msg, id := Rcl()
+	msg, id := ConfigRead()
+
 	SendData(conn, msg, id)
 }
 func sendMessage() {
@@ -81,13 +93,22 @@ func sendMessage() {
 	if err != nil {
 		panic("Error")
 	}
-
+	count := 0
 	for {
 		//		words := "{\"cmd\":\"login\",\"seqId\":\"1234321\",\"Message\":\"message\"}"
 		//		conn.Write(proto.PacketLemon3([]byte(words), 0x34))
 
 		//Send message to tcp server
-		ProtoCycle(conn)
+		switch count {
+		case 0:
+			msg, id := LoginFunc()
+			SendData(conn, msg, id)
+			break
+		case 1:
+			ProtoCycle(conn)
+			break
+		}
+		count = count + 1
 
 		fmt.Println("Send Data Already")
 

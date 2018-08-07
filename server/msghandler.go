@@ -62,12 +62,12 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 
 	if dat["cmd"].(string) == "login" {
 		fmt.Println("process login")
+
 		i := dat["mac"]
-		var mac string
 		if i == nil {
 			return "", proto.CmdKV[dat["cmd"].(string)]
 		}
-
+		mac := i.(string)
 		/// Save conn into ConnMap for later usage
 		ConnMap[mac] = conn
 
@@ -136,6 +136,15 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 	return "{\"cmd\":\"not found cmd\"}", 0
 }
 
+func FindMacInConnMap(conn net.Conn) string {
+	for k, v := range ConnMap {
+		fmt.Println("k=", k, " v=", v)
+		if v == conn {
+			return k
+		}
+	}
+	return ""
+}
 func handleMsg(msg []byte, conn net.Conn) (string, uint32) {
 
 	dat := make(map[string]interface{})
@@ -150,7 +159,14 @@ func handleMsg(msg []byte, conn net.Conn) (string, uint32) {
 			cmd == "cc_write_resp" ||
 			cmd == "rc_write_resp" ||
 			cmd == "upgrade_resp" ||
+			cmd == "config_read_resp" ||
 			cmd == "notification_resp" {
+
+			if cmd == "config_read_resp" {
+				//Find mac by net.Conn
+				mac := FindMacInConnMap(conn)
+				control.ParseConfigReadMsg(msg, mac)
+			}
 
 			return string(msg), proto.CmdKV[dat["cmd"].(string)]
 		}
