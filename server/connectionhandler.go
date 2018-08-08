@@ -64,6 +64,7 @@ func reader(readerChannel chan []byte, conn net.Conn) {
 				cmdId == proto.CmdKV["cc_write_resp"] ||
 				cmdId == proto.CmdKV["rc_write_resp"] ||
 				cmdId == proto.CmdKV["upgrade_resp"] ||
+				cmdId == proto.CmdKV["config_read_resp"] ||
 				cmdId == proto.CmdKV["notification_resp"] {
 				//send message to rpc command.
 				fmt.Println("Msg:", msg)

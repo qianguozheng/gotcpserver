@@ -30,6 +30,35 @@ type VerificationData struct {
 	TcpLimit    int    `json:"tcpLimit"`
 	UdpLimit    int    `json:"udpLimit"`
 }
+
+type Verification struct {
+	Cmd   string           `json:"cmd"`
+	SeqId string           `json:"seqId"`
+	Code  string           `json:"code"`
+	Data  VerificationData `json:"data"`
+}
+
+type VerificationReq struct {
+	Cmd         string `json:"cmd"`
+	SeqId       string `json:"seqId"`
+	Mac         string `json:"mac"`
+	TerminalMac string `json:terminalMac`
+}
+
+type Notification struct {
+	Cmd         string `json:"cmd"`
+	SeqId       string `json:"seqId"`
+	Mac         string `json:"mac"`
+	TerminalMac string `json:"terminalMac"`
+	Valid       int    `json:"valid"`
+	AuthType    int    `json:"authType"`
+	AuthId      string `json:"authId"`
+	UpRate      int    `json:"upRate"`
+	DownRate    int    `json:"downRate"`
+	TcpLimit    int    `json:"tcpLimit"`
+	UdpLimit    int    `json:"udpLimit"`
+}
+
 type AutoPortalStop struct {
 	IOSEnable     int    `json:iOSEnable`
 	AndroidEnable int    `json:androidEnable`
@@ -40,13 +69,6 @@ type ReqHdr struct {
 	Host      []string `json:host`
 	Uri       []string `json:uri`
 	UserAgent []string `json:userAgent`
-}
-
-type Verification struct {
-	Cmd   string           `json:"cmd"`
-	SeqId string           `json:"seqId"`
-	Code  string           `json:"code"`
-	Data  VerificationData `json:"data"`
 }
 
 type ReqParam struct {
@@ -68,6 +90,15 @@ type WebRead struct {
 }
 
 type WebWrite struct {
+	Cmd   string `json:"cmd"`
+	SeqId string `json:"seqId"`
+	Mac   string `json:"mac"`
+	Ver   int    `json:"ver"`
+	Url   string `json:"url"`
+	Md5   string `json:"md5"`
+}
+
+type Upgrade struct {
 	Cmd   string `json:"cmd"`
 	SeqId string `json:"seqId"`
 	Mac   string `json:"mac"`

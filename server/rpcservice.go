@@ -14,6 +14,10 @@ func DispatcherAddFunc() *gorpc.Dispatcher {
 		return ExecSendCommand(request)
 	})
 
+	d.AddFunc("Verification", func(request string) (string, error) {
+		return "", nil
+	})
+
 	//TODO: Add RPC FUNC here,
 
 	return d
@@ -23,13 +27,13 @@ func DispatcherAddFunc() *gorpc.Dispatcher {
 func RPCClientRequest(msg string) (string, error) {
 	d := DispatcherAddFunc()
 	//Client
-	c := gorpc.NewTCPClient("127.0.0.1:12445")
+	c := gorpc.NewTCPClient("127.0.0.1:12448")
 	c.Start()
 	defer c.Stop()
 
 	dc := d.NewFuncClient(c)
 
-	res, err := dc.Call("SendCommand", msg)
+	res, err := dc.Call("Verification", msg)
 	fmt.Printf("res:%v, err:%v\n", res, err)
 
 	return res.(string), err

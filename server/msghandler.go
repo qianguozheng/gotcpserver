@@ -175,9 +175,9 @@ func handleMsg(msg []byte, conn net.Conn) (string, uint32) {
 
 			resp, err := RPCClientRequest(string(msg))
 			if err != nil {
-				return resp, proto.CmdKV["verification_resp"]
-			} else {
 				return "", 0
+			} else {
+				return resp, proto.CmdKV["verification_resp"]
 			}
 		}
 

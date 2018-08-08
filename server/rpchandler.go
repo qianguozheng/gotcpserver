@@ -33,9 +33,9 @@ func ExecSendCommand(msg string) (string, error) {
 		case m := <-RpcResponse:
 			fmt.Println("exec send command", m.(string))
 			return m.(string), nil
-		case <-time.After(5 * time.Second):
+		case <-time.After(1 * time.Second):
 			bmsg, err := json.Marshal([]byte("\"cmd\":\"failed\""))
-			fmt.Println("exec send command", bmsg)
+			fmt.Println("exec send command", string(bmsg))
 			return string(bmsg), err
 		}
 	} else {
