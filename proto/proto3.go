@@ -5,6 +5,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"strconv"
+
+	log "../log"
 )
 
 const (
@@ -175,7 +177,7 @@ func UnpackLemon3(buffer []byte, readerChannel chan []byte) []byte {
 		fmt.Println(err.Error())
 		return nil
 	}
-	fmt.Printf("[FromClient]= [%d] [0x%x] [%s]\n", length, cmdId, string(buffer[8:length+8]))
+	log.Debug("[FromClient]= [%d] [0x%x] [%s]\n", length, cmdId, string(buffer[8:length+8]))
 
 	readerChannel <- buffer[8 : length+8]
 

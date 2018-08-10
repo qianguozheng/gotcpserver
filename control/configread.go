@@ -2,8 +2,8 @@ package control
 
 import (
 	"encoding/json"
-	"fmt"
 
+	log "../log"
 	"../proto"
 	"github.com/qianguozheng/goadmin/model"
 )
@@ -18,9 +18,8 @@ import (
 func ParseConfigReadMsg(msg []byte, mac string) {
 	var configRead proto.ConfigRead
 
-	fmt.Println("mac:", mac)
 	if err := json.Unmarshal(msg, &configRead); err == nil {
-		fmt.Println("ParseConfigRead:", configRead)
+		log.Debug("ParseConfigRead:%v", configRead)
 		configRead := configRead.Data
 		//TODO: store data to database
 
@@ -57,7 +56,7 @@ func ParseConfigReadMsg(msg []byte, mac string) {
 		model.DeleteWanByDeviceId(dev.Id)
 		for _, wan := range configRead.Wans {
 			wan.DeviceRefer = dev.Id
-			fmt.Println("add wan to db", wan)
+			//			fmt.Println("add wan to db", wan)
 			model.AddWan(wan)
 		}
 		//Ssid

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	log "../log"
 	"../proto"
 	"github.com/qianguozheng/goadmin/model"
 )
@@ -11,7 +12,6 @@ import (
 //Retrive Device Information to fill RCL config structure
 
 func RetriveDeviceInfoFormRCL(mac string) string {
-	fmt.Println("get in retrive rcl:", mac)
 
 	dev := model.GetDeviceByMac(mac)
 	fmt.Println(dev)
@@ -89,13 +89,11 @@ func RetriveDeviceInfoFormRCL(mac string) string {
 	//Type - GW500/AR9344 have different requirement
 	//Mode - AP/Route have different requirement
 
-	fmt.Println(rcl)
-
 	rclByte, err := json.Marshal(rcl)
 	if err != nil {
-		fmt.Println("marshal json failed")
+		log.Error("marshal json failed")
 		return ""
 	}
-	fmt.Println("rcl:", string(rclByte))
+	log.Debug("rcl:", string(rclByte))
 	return string(rclByte)
 }

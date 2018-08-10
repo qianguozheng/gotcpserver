@@ -2,13 +2,13 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
+	log "../log"
 	"../proto"
 )
 
-/// Reboot, etc
+/// Reboot/Notification/config_read etc
 //RPC Command
 func ExecSendCommand(msg string) (string, error) {
 	var dat map[string]interface{}
@@ -20,22 +20,25 @@ func ExecSendCommand(msg string) (string, error) {
 		cmdId := proto.CmdKV[cmd]
 
 		//Find net.Conn of mac
-		conn := ConnMap[mac]
+		conn := Comm.RetriveConn(mac)
+		rpc := make(chan interface{})
+		Comm.AddRpc(mac, rpc)
+		defer close(rpc)
 
 		//Send cmd to mac
-		_, err := conn.Write(proto.PacketLemon3([]byte(msg), cmdId))
+		_, err := (*conn).Write(proto.PacketLemon3([]byte(msg), cmdId))
 
 		if err != nil {
 			return "error in send command", err
 		}
 
 		select {
-		case m := <-RpcResponse:
-			fmt.Println("exec send command", m.(string))
+		case m := <-rpc:
+			log.Debug("exec send command", m.(string))
 			return m.(string), nil
 		case <-time.After(1 * time.Second):
 			bmsg, err := json.Marshal([]byte("\"cmd\":\"failed\""))
-			fmt.Println("exec send command", string(bmsg))
+			log.Debug("exec send command", string(bmsg))
 			return string(bmsg), err
 		}
 	} else {

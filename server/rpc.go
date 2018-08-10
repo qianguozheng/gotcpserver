@@ -1,8 +1,7 @@
 package server
 
 import (
-	"fmt"
-
+	log "../log"
 	"github.com/valyala/gorpc"
 )
 
@@ -34,7 +33,6 @@ func RPCClientRequest(msg string) (string, error) {
 	dc := d.NewFuncClient(c)
 
 	res, err := dc.Call("Verification", msg)
-	fmt.Printf("res:%v, err:%v\n", res, err)
 
 	return res.(string), err
 }
@@ -45,7 +43,7 @@ func RPCServerService() *gorpc.Server {
 	//Start TCP Server
 	s := gorpc.NewTCPServer("127.0.0.1:12445", d.NewHandlerFunc())
 	if err := s.Start(); err != nil {
-		fmt.Println("Cannot start rpc server")
+		log.Error("Cannot start rpc server")
 	}
 	//defer s.Stop()
 	return s

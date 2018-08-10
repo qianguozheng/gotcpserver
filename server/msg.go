@@ -2,9 +2,10 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
 	"time"
+
+	log "../log"
 
 	"../control"
 
@@ -34,14 +35,13 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 		}
 		result, err := json.Marshal(verify)
 		if err == nil {
-			fmt.Println("verification==", string(result))
+			log.Debug("verification=[%s]", string(result))
 			return string(result), proto.CmdKV[dat["cmd"].(string)]
 		}
 	}
 
 	//TODO: implement rcl config
 	if dat["cmd"].(string) == "rcl" {
-		fmt.Println("Rcl request")
 
 		result := control.RetriveDeviceInfoFormRCL(dat["mac"].(string))
 		return result, proto.CmdKV[dat["cmd"].(string)]
@@ -61,7 +61,6 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 	}
 
 	if dat["cmd"].(string) == "login" {
-		fmt.Println("process login")
 
 		i := dat["mac"]
 		if i == nil {
@@ -69,13 +68,13 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 		}
 		mac := i.(string)
 		/// Save conn into ConnMap for later usage
-		ConnMap[mac] = conn
+		//		ConnMap[mac] = conn
+		Comm.AddConn(mac, &conn)
 
-		fmt.Println("login mac:", mac)
 		found := control.FindMacInDB(mac)
-		fmt.Println("found", found)
+
 		if false == found {
-			fmt.Println("add mac info db")
+
 			control.AddMacIntoDB(mac)
 			control.PutMacOnline(mac)
 		}
@@ -88,7 +87,6 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 		}
 		result, err := json.Marshal(login)
 		if err == nil {
-			fmt.Println("login request=", string(result))
 			return string(result), proto.CmdKV[dat["cmd"].(string)]
 		}
 
@@ -105,8 +103,8 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 		}
 		result, err := json.Marshal(heartbeat)
 		if err == nil {
-			fmt.Println("[ToClient]=", string(result))
-			fmt.Println("=============================================")
+			log.Debug("[ToClient]=[%s]", string(result))
+
 			return string(result), proto.CmdKV[dat["cmd"].(string)]
 		}
 	}
@@ -126,29 +124,28 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 		}
 		result, err := json.Marshal(login)
 		if err == nil {
-			fmt.Println("[ToClient]=", string(result))
-			fmt.Println("=============================================")
+			log.Debug("[ToClient]=[%s]", string(result))
+
 			return string(result), proto.CmdKV[dat["cmd"].(string)]
 		}
-		//fmt.Println("result=", err.Error())
 	}
 
 	return "{\"cmd\":\"not found cmd\"}", 0
 }
 
-func FindMacInConnMap(conn net.Conn) string {
-	for k, v := range ConnMap {
-		fmt.Println("k=", k, " v=", v)
-		if v == conn {
-			return k
-		}
-	}
-	return ""
-}
+//func FindMacInConnMap(conn net.Conn) string {
+//	for k, v := range ConnMap {
+//		fmt.Println("k=", k, " v=", v)
+//		if v == conn {
+//			return k
+//		}
+//	}
+//	return ""
+//}
 func handleMsg(msg []byte, conn net.Conn) (string, uint32) {
 
 	dat := make(map[string]interface{})
-	fmt.Println("handleMsg..")
+	log.Debug("handleMsg..")
 
 	if err := json.Unmarshal(msg, &dat); err == nil {
 
@@ -164,7 +161,7 @@ func handleMsg(msg []byte, conn net.Conn) (string, uint32) {
 
 			if cmd == "config_read_resp" {
 				//Find mac by net.Conn
-				mac := FindMacInConnMap(conn)
+				mac := Comm.RetriveMacByConn(&conn)
 				control.ParseConfigReadMsg(msg, mac)
 			}
 

@@ -4,33 +4,33 @@ import (
 	"net"
 
 	"../control"
+	"../log"
 	"../proto"
 	"github.com/qianguozheng/goadmin/model"
 )
 
 //http://www.01happy.com/golang-tcp-socket-adhere/
 
-const (
-	MaxRead = 1024 * 1024 //1MB
-)
-
-//Store net.Conn of client into map, so we can send command to client via net.Conn
-var ConnMap map[string]net.Conn
-var RpcResponse chan interface{}
-
-func GobalInit() {
-	RpcResponse = make(chan interface{}, 1)
-	ConnMap = make(map[string]net.Conn)
-}
 func Main() {
 	//TODO: Dynamic assign ip and port
-	HostAndPort := "192.168.0.12:37001"
-	listener := server(HostAndPort)
+	opts := parseArgs()
+
+	log.LogTo(opts.LogTo, opts.LogLevel)
+
+	var hostport string
+	if opts.TcpAddr == "" || opts.Port == "" {
+		log.Error("tcp and port MUST not be null")
+		return
+	}
+	//HostAndPort := "192.168.0.12:37001"
+	hostport = opts.TcpAddr + opts.Port
+	listener := server(hostport)
 	defer listener.Close()
 
-	GobalInit()
+	CommInit()
 
-	control.Db = model.InitDB()
+	log.Info("DBPath: %s", opts.DBPath)
+	control.Db = model.InitDB(opts.DBPath)
 	model.DB = control.Db
 	defer control.Db.Close()
 
@@ -56,6 +56,6 @@ func server(host string) *net.TCPListener {
 	listener, err := net.ListenTCP("tcp", server)
 	checkError(err, "ListenTCP: ")
 
-	println("Listening to: ", listener.Addr().String())
+	log.Info("Listening to: %s", listener.Addr().String())
 	return listener
 }

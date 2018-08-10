@@ -4,17 +4,18 @@ import (
 	"fmt"
 	"net"
 
+	log "../log"
 	"../proto"
 )
 
 // Handle Each client request
 func connectionHandler(conn net.Conn) {
 	connFrom := conn.RemoteAddr().String()
-	println("Connection from: ", connFrom)
+	log.Info("Connection from: %s", connFrom)
 
 	m := func(conn net.Conn) {
 		err := conn.Close()
-		fmt.Printf("Closing connection: %s\n", connFrom)
+		log.Info("Closing connection: %s\n", connFrom)
 		checkError(err, "Close:")
 	}
 	defer m(conn)
@@ -27,11 +28,11 @@ func connectionHandler(conn net.Conn) {
 		length, err := conn.Read(ibuf[0 : MaxRead+1])
 		//checkError(err, "Read From client failed")
 		if err != nil {
-			fmt.Printf("ERROR %s\n", err.Error())
+			log.Error("ERROR %s\n", err.Error())
 			return
 		}
 		ibuf[MaxRead] = 0
-		fmt.Println("length=", length)
+		//		fmt.Println("length=", length)
 
 		readerChannel := make(chan []byte, 16)
 
@@ -68,7 +69,8 @@ func reader(readerChannel chan []byte, conn net.Conn) {
 				cmdId == proto.CmdKV["notification_resp"] {
 				//send message to rpc command.
 				fmt.Println("Msg:", msg)
-				RpcResponse <- msg
+				//RpcResponse <- msg
+				Comm.SendRpcResponse(Comm.RetriveMacByConn(&conn), msg)
 			}
 
 			if cmdId == 0 {
@@ -85,7 +87,7 @@ func talktoclients(to net.Conn, msg string, cmdId uint32) {
 	wrote, err := to.Write(proto.PacketLemon3([]byte(msg), cmdId))
 	checkError(err, "Write: wrote "+string(wrote)+" bytes.")
 	if cmdId == proto.CmdKV["heartbeat"] {
-		fmt.Println("This is heartbeat")
+		log.Info("This is heartbeat")
 	}
 }
 
