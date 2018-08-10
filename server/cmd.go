@@ -25,6 +25,7 @@ func ExecSendCommand(msg string) (string, error) {
 		Comm.AddRpc(mac, rpc)
 		defer close(rpc)
 
+		log.Debug("RPC Command:[%s]", msg)
 		//Send cmd to mac
 		_, err := (*conn).Write(proto.PacketLemon3([]byte(msg), cmdId))
 
@@ -34,11 +35,11 @@ func ExecSendCommand(msg string) (string, error) {
 
 		select {
 		case m := <-rpc:
-			log.Debug("exec send command", m.(string))
+			log.Debug("exec send command, %s", m.(string))
 			return m.(string), nil
-		case <-time.After(1 * time.Second):
+		case <-time.After(5 * time.Second):
 			bmsg, err := json.Marshal([]byte("\"cmd\":\"failed\""))
-			log.Debug("exec send command", string(bmsg))
+			log.Debug("exec send command timeout, %s", string(bmsg))
 			return string(bmsg), err
 		}
 	} else {

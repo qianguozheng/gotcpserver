@@ -3,6 +3,8 @@ package server
 import (
 	"net"
 	"strings"
+
+	"../log"
 )
 
 /*
@@ -34,6 +36,7 @@ func (c *CommUnit) AddRpc(mac string, rpc chan interface{}) {
 
 func (c *CommUnit) SendRpcResponse(mac string, msg interface{}) {
 	for k, v := range c.RpcCh {
+		log.Debug("k=%s, mac=%s", k, mac)
 		if 0 == strings.Compare(k, mac) {
 			v <- msg
 		}
@@ -46,10 +49,13 @@ func (c *CommUnit) RetriveConn(mac string) *net.Conn {
 
 func (c *CommUnit) RetriveMacByConn(conn *net.Conn) string {
 	for k, v := range c.ConnMap {
-		if v == conn {
+		//log.Debug("conn=%v, v=%v", *conn, *v)
+		if (*v) == (*conn) {
+			//log.Debug("RetriveMacByConn: %s", k)
 			return k
 		}
 	}
+	log.Debug("Not found mac by conn")
 	return ""
 }
 

@@ -94,6 +94,6 @@ func RetriveDeviceInfoFormRCL(mac string) string {
 		log.Error("marshal json failed")
 		return ""
 	}
-	log.Debug("rcl:", string(rclByte))
+	log.Debug("rcl: %s", string(rclByte))
 	return string(rclByte)
 }

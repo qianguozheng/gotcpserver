@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	log "../log"
+	log "github.com/qianguozheng/gotcpserver/log"
 )
 
 const (
@@ -126,7 +126,7 @@ func InitKeyValue() {
 	CmdKV = make(map[string]uint32)
 	//Basic API
 	CmdKV["login"] = 0x80000010
-	CmdKV["heartbeat"] = 0X80000012
+	CmdKV["heartbeat"] = 0x80000012
 	CmdKV["rcl"] = 0x80000011
 
 	//Config API
@@ -152,7 +152,7 @@ func InitKeyValue() {
 
 	CmdKV["config_read_req"] = 0x00000103
 	CmdKV["config_read_resp"] = 0x80000103
-	CmdKV["reboot"] = 0x00000100
+	CmdKV["reboot_req"] = 0x00000100
 	CmdKV["reboot_resp"] = 0X80000100
 
 	CmdKV["upgrade_req"] = 0x00000102
