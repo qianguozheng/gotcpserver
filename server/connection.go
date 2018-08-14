@@ -66,11 +66,13 @@ func reader(readerChannel chan []byte, conn net.Conn) {
 				cmdId == proto.CmdKV["rc_write_resp"] ||
 				cmdId == proto.CmdKV["upgrade_resp"] ||
 				cmdId == proto.CmdKV["config_read_resp"] ||
+				cmdId == proto.CmdKV["dns_bogus_write_resp"] ||
 				cmdId == proto.CmdKV["notification_resp"] {
 				//send message to rpc command.
 				fmt.Println("Msg:", msg)
 				//RpcResponse <- msg
-				Comm.SendRpcResponse(Comm.RetriveMacByConn(&conn), msg)
+				Comm.SendRpcResponse(Comm.RetriveMacByConn(conn), msg)
+				return
 			}
 
 			if cmdId == 0 {

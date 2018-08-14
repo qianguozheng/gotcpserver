@@ -141,6 +141,7 @@ func InitKeyValue() {
 	CmdKV["resource_read_req"] = 0X00000108
 	CmdKV["resource_write_req"] = 0X00000109
 	CmdKV["dns_bogus_write_req"] = 0x00000111
+	CmdKV["dns_bogus_write_resp"] = 0x80000111
 
 	//Core API
 	CmdKV["verification_req"] = 0x00000013

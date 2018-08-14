@@ -69,7 +69,8 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 		mac := i.(string)
 		/// Save conn into ConnMap for later usage
 		//		ConnMap[mac] = conn
-		Comm.AddConn(mac, &conn)
+		log.Debug("#add mac conn into table %s", mac)
+		Comm.AddConn(mac, conn)
 
 		found := control.FindMacInDB(mac)
 
@@ -157,11 +158,12 @@ func handleMsg(msg []byte, conn net.Conn) (string, uint32) {
 			cmd == "rc_write_resp" ||
 			cmd == "upgrade_resp" ||
 			cmd == "config_read_resp" ||
+			cmd == "dns_bogus_write_resp" ||
 			cmd == "notification_resp" {
 
 			if cmd == "config_read_resp" {
 				//Find mac by net.Conn
-				mac := Comm.RetriveMacByConn(&conn)
+				mac := Comm.RetriveMacByConn(conn)
 				control.ParseConfigReadMsg(msg, mac)
 			}
 

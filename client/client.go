@@ -178,6 +178,10 @@ func reader(readerChannel chan []byte, conn net.Conn) {
 					Log(err.Error())
 				}
 				SendData(conn, msg, proto.CmdKV["notification_resp"])
+			} else if msg["cmd"].(string) == "dns_bogus_write_req" {
+				resp := "{\"cmd\":\"dns_bogus_write_resp\", \"seqId\":\"1234321\",\"code\":\"000\",\"Message\":\"message\"}"
+				SendData(conn, []byte(resp), proto.CmdKV["dns_bogus_write_resp"])
+				Log("Send response to server")
 			}
 		}
 

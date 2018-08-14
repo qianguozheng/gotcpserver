@@ -12,7 +12,7 @@ import (
 */
 
 type CommUnit struct {
-	ConnMap map[string]*net.Conn
+	ConnMap map[string]net.Conn
 	RpcCh   map[string]chan interface{}
 }
 
@@ -20,13 +20,13 @@ var Comm *CommUnit
 
 func NewCommUnit() *CommUnit {
 	comm := &CommUnit{
-		ConnMap: make(map[string]*net.Conn),
+		ConnMap: make(map[string]net.Conn),
 		RpcCh:   make(map[string]chan interface{}),
 	}
 	return comm
 }
 
-func (c *CommUnit) AddConn(mac string, conn *net.Conn) {
+func (c *CommUnit) AddConn(mac string, conn net.Conn) {
 	c.ConnMap[mac] = conn
 }
 
@@ -43,14 +43,14 @@ func (c *CommUnit) SendRpcResponse(mac string, msg interface{}) {
 	}
 }
 
-func (c *CommUnit) RetriveConn(mac string) *net.Conn {
+func (c *CommUnit) RetriveConn(mac string) net.Conn {
 	return c.ConnMap[mac]
 }
 
-func (c *CommUnit) RetriveMacByConn(conn *net.Conn) string {
+func (c *CommUnit) RetriveMacByConn(conn net.Conn) string {
 	for k, v := range c.ConnMap {
 		//log.Debug("conn=%v, v=%v", *conn, *v)
-		if (*v) == (*conn) {
+		if (v) == (conn) {
 			//log.Debug("RetriveMacByConn: %s", k)
 			return k
 		}
