@@ -3,6 +3,7 @@ package control
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	log "../log"
 	"../proto"
@@ -19,6 +20,53 @@ func RetriveDeviceInfoFormRCL(mac string) string {
 	qos := model.GetQosByDeviceId(dev.Id)
 	wanqos := model.GetWanQosByQosId(qos.Id)
 	md5 := model.GetMd5ByDeviceId(dev.Id)
+
+	//TrustDomains
+	domains := model.GetDomainsByGloabl()
+	domains2 := model.GetDomainsByProjectId(dev.ProjectRefer)
+	domains = append(domains, domains2...)
+	var domain proto.TrustDomains
+
+	for _, v := range domains {
+		domain = append(domain, v.Domain)
+	}
+
+	//TrustIps
+	ips := model.GetIpsByProjectId(dev.ProjectRefer)
+
+	//	for _, v := range ips {
+	//		fmt.Println("v=", v.Ip)
+	//	}
+	ips2 := model.GetIpsByGlobal()
+	for _, v := range ips2 {
+		found := false
+		for _, vv := range ips {
+			if v.Ip == vv.Ip {
+				found = true
+			}
+		}
+		if !found {
+			ips = append(ips, v)
+		}
+	}
+	//ips = append(ips, ips2...)
+
+	var trustIps []proto.TrustIps
+	for _, v := range ips {
+		var trustIp proto.TrustIps
+		if strings.Contains(v.Ip, "-") {
+			vv := strings.Split(v.Ip, "-")
+			//for _, ip := range vv {
+			trustIp.StartIp = vv[0]
+			trustIp.EndIp = vv[1]
+			//}
+		} else {
+			trustIp.StartIp = v.Ip
+			trustIp.EndIp = v.Ip
+		}
+		trustIps = append(trustIps, trustIp)
+	}
+	//DnsBogus
 
 	if 0 == dev.Sync {
 		md5.Md5 = "00000000000000000000000000000000"
@@ -59,8 +107,8 @@ func RetriveDeviceInfoFormRCL(mac string) string {
 			UdpLimit: qos.UdpLimit,
 			Wans:     wanqos,
 		},
-		TrustIps:      proto.TrustIps{},
-		TrustDomains:  proto.TrustDomains{},
+		TrustIps:      trustIps,
+		TrustDomains:  domain,
 		HttpProxy:     proto.HttpProxy{},
 		NodeConfigUrl: "http://cdn.magicwifi.com.cn/idc/nodes.json",
 		AutoPortalStop: proto.AutoPortalStop{

@@ -18,7 +18,7 @@ type RclConfigCore struct {
 	Dhcp           Dhcp           `json:"dhcp"`
 	Ssid           []model.Ssid   `json:"ssids"`
 	Qos            Qos            `json:"qos"`
-	TrustIps       TrustIps       `json:"trustIps"`
+	TrustIps       []TrustIps     `json:"trustIps"`
 	TrustDomains   TrustDomains   `json:"trustDomains"`
 	HttpProxy      HttpProxy      `json:"httpProxy"`
 	AutoPortalStop AutoPortalStop `json:"autoPortalStop"`
