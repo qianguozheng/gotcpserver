@@ -13,24 +13,24 @@ import (
 
 func Main() {
 	//TODO: Dynamic assign ip and port
-	opts := parseArgs()
+	Opts = parseArgs()
 
-	log.LogTo(opts.LogTo, opts.LogLevel)
+	log.LogTo(Opts.LogTo, Opts.LogLevel)
 
 	var hostport string
-	if opts.TcpAddr == "" || opts.Port == "" {
+	if Opts.TcpAddr == "" || Opts.Port == "" {
 		log.Error("tcp and port MUST not be null")
 		return
 	}
 	//HostAndPort := "192.168.0.12:37001"
-	hostport = opts.TcpAddr + opts.Port
+	hostport = Opts.TcpAddr + Opts.Port
 	listener := server(hostport)
 	defer listener.Close()
 
 	CommInit()
 
-	log.Info("DBPath: %s", opts.DBPath)
-	control.Db = model.InitDB(opts.DBPath)
+	log.Info("DBPath: %s", Opts.DBPath)
+	control.Db = model.InitDB(Opts.DBPath)
 	model.DB = control.Db
 	defer control.Db.Close()
 

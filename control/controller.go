@@ -26,21 +26,24 @@ func AddMacIntoDB(mac string) {
 
 func PutMacOnline(mac string) {
 	//model.UpdateDeviceOnlineStatus(model.Database, mac, 1)
-	var device model.Device = model.Device{Mac: mac}
-	Db.Model(&device).Update("Online", 1)
+	var dev model.Device
+	Db.Model(&model.Device{}).Where("mac=?", mac).Find(&dev)
+	Db.Debug().Model(&model.DeviceStatus{}).Where("device_refer=?", dev.Id).Update("Online", true)
 }
 
 func PutMacOffline(mac string) {
 	//model.UpdateDeviceOnlineStatus(model.Database, mac, 0)
-	var device model.Device = model.Device{Mac: mac}
-	Db.Model(&device).Update("Online", 0)
+	var dev model.Device
+	Db.Model(&model.Device{}).Where("mac=?", mac).Find(&dev)
+	Db.Debug().Model(&model.DeviceStatus{}).Where("device_refer=?", dev.Id).Update("Online", false)
 }
 
-func UpdateHeartbeat(mac, heartbeat string) {
+func UpdateHeartbeat(mac string, heartbeat int64) {
 	//model.UpdateDeviceLastHeartbeat(model.Database, mac, heartbeat)
 	//TODO: move heartbeat/online to redis
-	var device model.Device = model.Device{Mac: mac}
-	Db.Model(&device).Update("Heartbeat", heartbeat)
+	var dev model.Device
+	Db.Model(&model.Device{}).Where("mac=?", mac).Find(&dev)
+	Db.Model(&model.DeviceStatus{}).Debug().Where("device_refer=?", dev.Id).Update("Heartbeat", heartbeat)
 }
 
 func GetHeartbeat(mac string) int64 {

@@ -43,7 +43,7 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 	//TODO: implement rcl config
 	if dat["cmd"].(string) == "rcl" {
 
-		result := control.RetriveDeviceInfoFormRCL(dat["mac"].(string))
+		result := control.RetriveDeviceInfoFormRCL(dat["mac"].(string), Opts.Rcl)
 		return result, proto.CmdKV[dat["cmd"].(string)]
 		//MTK
 		//return string("{\"cmd\":\"rcl\",\"code\":\"000\",\"data\":{\"dhcp\":{\"endIp\":\"192.168.8.200\",\"leaseTime\":120,\"startIp\":\"192.168.8.100\"},\"httpProxy\":{\"enable\":false,\"regex\":\"\",\"replacement\":\"\"},\"lan\":{\"ip\":\"192.168.8.1\",\"mask\":\"255.255.255.0\"},\"md5\":\"79a8836d586f60d998662169b4ff0f48\",\"mode\":1,\"name\":\"-MagicWiFi-58D1-MTK\",\"qos\":{\"downRate\":1024,\"tcpLimit\":200,\"udpLimit\":60,\"upRate\":128,\"wans\":[{\"down\":10240,\"port\":0,\"up\":2048}]},\"rfs\":[{\"frequency\":0,\"mode\":0,\"power\":100,\"type\":\"2.4\"}],\"ssids\":[{\"name\":\"-MagicWiFi-_58D0\",\"password\":\"\",\"port\":0,\"url\":\"http://magicwifi.com.cn/captive/index.html\"}],\"trustDomains\":[\"alicdn.com\",\"alipaydns.com\",\"hi-wifi.cn\",\"sasdk.cs0309.3g.qq.com\",\"wx.tenpay.com\",\"tbcache.com\",\"api.apkplug.com\",\"alog.umeng.com\",\"alipay.com\",\"pay.heepay.com\",\"wx.tencent.cn\",\"magicwifi.com.cn\",\"sasdk.3g.qq.com\",\"mp.weixin.qq.com\",\"zhongxin.junka.com\",\"rippletek.com\",\"alipayobjects.com\"],\"trustIps\":[{\"endIp\":\"183.232.2.4\",\"startIp\":\"183.232.2.4\"},{\"endIp\":\"121.201.55.228\",\"startIp\":\"121.201.55.153\"},{\"endIp\":\"123.206.2.126\",\"startIp\":\"123.206.2.126\"},{\"endIp\":\"123.206.2.188\",\"startIp\":\"123.206.2.188\"},{\"endIp\":\"  192.168.70.43\",\"startIp\":\"192.168.70.43  \"},{\"endIp\":\"183.238.95.110\",\"startIp\":\"183.238.95.101\"}],\"autoPortalStop\":{\"iOSEnable\":1,\"androidEnable\":1,\"ios\":{\"userAgent\":[\"captivenetworksupport\"]},\"android\":{\"uri\":[\"/generate_204\"],\"host\":[\"vivo.com.cn\"]}},\"auditEnable\":1},\"seqId\":\"87e41fcbfd95430e8f05f0f8ebf53273\"}"), proto.CmdKV[dat["cmd"].(string)]
@@ -77,7 +77,7 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 		if false == found {
 
 			control.AddMacIntoDB(mac)
-			control.PutMacOnline(mac)
+			//control.PutMacOnline(mac)
 		}
 
 		login := proto.RespParam{
@@ -95,7 +95,8 @@ func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) 
 
 	if dat["cmd"].(string) == "heartbeat" {
 		mac := dat["mac"].(string)
-		control.UpdateHeartbeat(mac, time.Now().Format("2006-01-02 15:04:05"))
+		//control.UpdateHeartbeat(mac, time.Now().Format("2006-01-02 15:04:05 +0800 CST"))
+		control.UpdateHeartbeat(mac, time.Now().Unix())
 		heartbeat := proto.RespParam{
 			Cmd:   dat["cmd"].(string),
 			SeqId: dat["seqId"].(string),

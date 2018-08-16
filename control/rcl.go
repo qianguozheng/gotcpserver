@@ -12,7 +12,7 @@ import (
 
 //Retrive Device Information to fill RCL config structure
 
-func RetriveDeviceInfoFormRCL(mac string) string {
+func RetriveDeviceInfoFormRCL(mac string, rclEnable bool) string {
 
 	dev := model.GetDeviceByMac(mac)
 	fmt.Println(dev)
@@ -68,7 +68,7 @@ func RetriveDeviceInfoFormRCL(mac string) string {
 	}
 	//DnsBogus
 
-	if 0 == dev.Sync {
+	if 0 == dev.Sync || !rclEnable {
 		md5.Md5 = "00000000000000000000000000000000"
 	}
 
