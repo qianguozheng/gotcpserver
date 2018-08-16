@@ -15,30 +15,29 @@ import (
 //TODO： implement the minimal of firmware
 func processCommand(dat map[string]interface{}, conn net.Conn) (string, uint32) {
 
-	//TODO: make verification work
-	if dat["cmd"] == "verification" {
-		vdata := proto.VerificationData{
-			TerminalMac: dat["terminalMac"].(string),
-			Valid:       1441,
-			AuthType:    0,
-			AuthId:      "13538273761",
-			UpRate:      100,
-			DownRate:    101,
-			TcpLimit:    222,
-			UdpLimit:    223,
-		}
-		verify := proto.Verification{
-			Cmd:   dat["cmd"].(string),
-			SeqId: dat["seqId"].(string),
-			Code:  "000",
-			Data:  vdata,
-		}
-		result, err := json.Marshal(verify)
-		if err == nil {
-			log.Debug("verification=[%s]", string(result))
-			return string(result), proto.CmdKV[dat["cmd"].(string)]
-		}
-	}
+	//	if dat["cmd"] == "verification" {
+	//		vdata := proto.VerificationData{
+	//			TerminalMac: dat["terminalMac"].(string),
+	//			Valid:       1441,
+	//			AuthType:    0,
+	//			AuthId:      "13538273761",
+	//			UpRate:      100,
+	//			DownRate:    101,
+	//			TcpLimit:    222,
+	//			UdpLimit:    223,
+	//		}
+	//		verify := proto.Verification{
+	//			Cmd:   dat["cmd"].(string),
+	//			SeqId: dat["seqId"].(string),
+	//			Code:  "000",
+	//			Data:  vdata,
+	//		}
+	//		result, err := json.Marshal(verify)
+	//		if err == nil {
+	//			log.Debug("verification=[%s]", string(result))
+	//			return string(result), proto.CmdKV[dat["cmd"].(string)]
+	//		}
+	//	}
 
 	//TODO: implement rcl config
 	if dat["cmd"].(string) == "rcl" {
