@@ -25,7 +25,7 @@ func RetriveDeviceInfoFormRCL(mac string, rclEnable bool) string {
 	domains := model.GetDomainsByGloabl()
 	domains2 := model.GetDomainsByProjectId(dev.ProjectRefer)
 	domains = append(domains, domains2...)
-	var domain proto.TrustDomains
+	domain := proto.TrustDomains{}
 
 	for _, v := range domains {
 		domain = append(domain, v.Domain)
@@ -51,7 +51,7 @@ func RetriveDeviceInfoFormRCL(mac string, rclEnable bool) string {
 	}
 	//ips = append(ips, ips2...)
 
-	var trustIps []proto.TrustIps
+	trustIps := []proto.TrustIps{}
 	for _, v := range ips {
 		var trustIp proto.TrustIps
 		if strings.Contains(v.Ip, "-") {
@@ -66,7 +66,19 @@ func RetriveDeviceInfoFormRCL(mac string, rclEnable bool) string {
 		}
 		trustIps = append(trustIps, trustIp)
 	}
+
 	//DnsBogus
+	dnsBogus := []proto.DnsBogus{}
+	bogus := model.GetDnsBogusByProjectId(dev.ProjectRefer)
+	for _, v := range bogus {
+		if v.Status == 2 {
+			dns := proto.DnsBogus{
+				Domain: v.Domain,
+				Host:   v.Ip,
+			}
+			dnsBogus = append(dnsBogus, dns)
+		}
+	}
 
 	if 0 == dev.Sync || !rclEnable {
 		md5.Md5 = "00000000000000000000000000000000"
@@ -109,6 +121,7 @@ func RetriveDeviceInfoFormRCL(mac string, rclEnable bool) string {
 		},
 		TrustIps:      trustIps,
 		TrustDomains:  domain,
+		DnsBogus:      dnsBogus,
 		HttpProxy:     proto.HttpProxy{},
 		NodeConfigUrl: "http://cdn.magicwifi.com.cn/idc/nodes.json",
 		AutoPortalStop: proto.AutoPortalStop{

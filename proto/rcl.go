@@ -20,6 +20,7 @@ type RclConfigCore struct {
 	Qos            Qos            `json:"qos"`
 	TrustIps       []TrustIps     `json:"trustIps"`
 	TrustDomains   TrustDomains   `json:"trustDomains"`
+	DnsBogus       []DnsBogus     `json:"bogus"` //For future usage
 	HttpProxy      HttpProxy      `json:"httpProxy"`
 	AutoPortalStop AutoPortalStop `json:"autoPortalStop"`
 	NodeConfigUrl  string         `json:"nodeConfigUrl"`
