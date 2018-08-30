@@ -20,7 +20,8 @@ func AddMacIntoDB(mac string) {
 	var device model.Device = model.Device{Mac: mac}
 
 	if FindMacInDB(mac) == false {
-		Db.Create(&device)
+		//Db.Create(&device)
+		model.AddDevice(device)
 	}
 }
 
