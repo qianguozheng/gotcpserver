@@ -29,8 +29,9 @@ func Main() {
 
 	CommInit()
 
-	log.Info("DBPath: %s", Opts.DBPath)
-	control.Db = model.InitDB(Opts.DBPath)
+	log.Info("DBPath: %s, DBType: %s", Opts.DBPath, Opts.DBType)
+	//control.Db = model.InitDB(Opts.DBPath)
+	control.Db = model.InitDB(Opts.DBPath, Opts.DBType)
 	model.DB = control.Db
 	defer control.Db.Close()
 
