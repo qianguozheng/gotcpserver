@@ -4,6 +4,8 @@ import (
 	"net"
 	"strings"
 
+	"sync"
+
 	"../log"
 )
 
@@ -14,6 +16,7 @@ import (
 type CommUnit struct {
 	ConnMap map[string]net.Conn
 	RpcCh   map[string]chan interface{}
+	sync.Mutex
 }
 
 var Comm *CommUnit
@@ -27,14 +30,20 @@ func NewCommUnit() *CommUnit {
 }
 
 func (c *CommUnit) AddConn(mac string, conn net.Conn) {
+	c.Lock()
+	defer c.Unlock()
 	c.ConnMap[mac] = conn
 }
 
 func (c *CommUnit) AddRpc(mac string, rpc chan interface{}) {
+	c.Lock()
+	defer c.Unlock()
 	c.RpcCh[mac] = rpc
 }
 
 func (c *CommUnit) SendRpcResponse(mac string, msg interface{}) {
+	c.Lock()
+	defer c.Unlock()
 	for k, v := range c.RpcCh {
 		log.Debug("k=%s, mac=%s", k, mac)
 		if 0 == strings.Compare(k, mac) {
@@ -44,10 +53,14 @@ func (c *CommUnit) SendRpcResponse(mac string, msg interface{}) {
 }
 
 func (c *CommUnit) RetriveConn(mac string) net.Conn {
+	c.Lock()
+	defer c.Unlock()
 	return c.ConnMap[mac]
 }
 
 func (c *CommUnit) RetriveMacByConn(conn net.Conn) string {
+	c.Lock()
+	defer c.Unlock()
 	for k, v := range c.ConnMap {
 		//log.Debug("conn=%v, v=%v", *conn, *v)
 		if (v) == (conn) {
